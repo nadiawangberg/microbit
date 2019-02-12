@@ -4,6 +4,7 @@
 
 #define UART ((NRF_UART_REG*)0x40002000)
 typedef struct {
+	//task
 	volatile uint32_t STARTRX;
 	volatile uint32_t STOPRX;
 	volatile uint32_t STARTTX;
@@ -12,6 +13,7 @@ typedef struct {
 	volatile uint32_t SUSPEND;
 	volatile uint32_t RESERVED1[56];
 
+	//events
 	volatile uint32_t CTS;
 	volatile uint32_t NCTS;
 	volatile uint32_t RXDRDY;	
@@ -23,6 +25,7 @@ typedef struct {
 	volatile uint32_t RXTO;
 	volatile uint32_t RESERVED5[110];
 
+	//register
 	volatile uint32_t INTEN;
 	volatile uint32_t INTENSET;
 	volatile uint32_t INTENCLR;
@@ -46,8 +49,9 @@ typedef struct {
 
 
 void uart_init() {
-	UART->BAUDRATE = 0x00275000 // Baud9600
-
+	UART->BAUDRATE = 0x00275000; // Baud9600
+	UART->PSELCTS = 0xFFFFFFFF;
+	UART->PSELRTS = 0xFFFFFFFF;
 }
 
 void uart_send(char letter) {
