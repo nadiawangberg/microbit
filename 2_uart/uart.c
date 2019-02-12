@@ -8,38 +8,38 @@ typedef struct {
 	volatile uint32_t STOPRX;
 	volatile uint32_t STARTTX;
 	volatile uint32_t STOPTX;
-	// volatile uint32_t RESERVED0[3];
+	volatile uint32_t RESERVED0[3];
 	volatile uint32_t SUSPEND;
 	volatile uint32_t RESERVED1[56];
 
 	volatile uint32_t CTS;
 	volatile uint32_t NCTS;
 	volatile uint32_t RXDRDY;	
-	// reserved her?? 
+	volatile uint32_t RESERVED2[4];
 	volatile uint32_t TXDRDY;
-	// reserved her?? 
+	volatile uint32_t RESERVED3[1]; 
 	volatile uint32_t ERROR;
-	// reserved her?? 
+	volatile uint32_t RESERVED4[7]; 
 	volatile uint32_t RXTO;
-	volatile uint32_t RESERVED2[146];
+	volatile uint32_t RESERVED5[110];
 
 	volatile uint32_t INTEN;
 	volatile uint32_t INTENSET;
 	volatile uint32_t INTENCLR;
-	// reserved her?? 
+	volatile uint32_t RESERVED6[93];
 	volatile uint32_t ERRORSRC;
-	// reserved her?? 
+	volatile uint32_t RESERVED7[31]; 
 	volatile uint32_t ENABLE;
-	// reserved her?? 
+	volatile uint32_t RESERVED8[1];
 	volatile uint32_t PSELRTS;
 	volatile uint32_t PSELTXD; // får pinner til å bli brukt av GPIO ??
 	volatile uint32_t PSELCTS;
 	volatile uint32_t PSELRXD; // får pinner til å bli brukt av GPIO ??
 	volatile uint32_t RXD;
 	volatile uint32_t TXD;
-	// reserved her?? 
+	volatile uint32_t RESERVED9[1]; 
 	volatile uint32_t BAUDRATE;
-	// reserved her?? 
+	volatile uint32_t RESERVED10[17]; 
 	volatile uint32_t CONFIG;
 
 } NRF_UART_REG;
