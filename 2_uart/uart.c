@@ -5,7 +5,7 @@
 #define UART ((NRF_UART_REG*)0x40002000)
 typedef struct {
 	//task
-	volatile uint32_t STARTRX;
+	volatile uint32_t STARTRX; // størrelse 32bit, 4byte
 	volatile uint32_t STOPRX;
 	volatile uint32_t STARTTX;
 	volatile uint32_t STOPTX;
@@ -50,43 +50,56 @@ typedef struct {
 
 void uart_init() {
 	UART->BAUDRATE = 0x00275000; // Baud9600
-	UART->PSELCTS = 0xFFFFFFFF;
-	UART->PSELRTS = 0xFFFFFFFF;
+
+	//We dont have flow control :(
+	UART->PSELCTS = 0xFFFFFFFF; // vi har IKKE CTS
+	UART->PSELRTS = 0xFFFFFFFF; // vi har IKKE RTS
+
+	// Konfigurere de nødvendige GPIO-pinnene som input/output
+	GPIO->PIN_CNF[25] = 0; // TGT_RXD input
+    GPIO->PIN_CNF[24] = 1; // TGT_TXD output
+
+    UART->PSELTXD = 24; // Uart finner riktig GPIO pin
+    UART->PSELRXD = 25; // Uart finner riktig GPIO pin
+
+    // Skrur på UART module (ENABLE-register)
+	UART->ENABLE = 4; // 0x00000001;
+
+	// Starte å ta imot meldinger (STARTRX til 1)
+	UART->STARTRX = 1;
 }
 
+			 //1 byte
 void uart_send(char letter) {
+	// Skru på sending av meldinger
+	// UART->STOPRX = 1;
+	UART->STARTTX = 1;
+	UART->TXD = letter; // begynner å sende melding
 
+	//Så lenge melding ikke er sendt VENT
+	while (!UART->TXDRDY);
+    
+    /*
+	for(int i = 13; i <= 15; i++){
+		GPIO->OUTSET = (1 << i);
+	}
+	for(int i = 4; i <= 12; i++){ // Ground (aktiv lav)
+		GPIO->OUTCLR = (1 << i);
+	}
+	*/
+
+	//Melding er sendt
+	UART->STOPTX = 1; // Skru av melding sending
+	UART->TXDRDY = 0; // Data sent from TDX - av
 }
 
 char uart_read() {
+	char letter;
 
+    if(UART->RXDRDY) { // Data recieved
+	    UART->RXDRDY = 0; // skrus av FØR lesing
+        letter = UART->RXD; // lese
+        return letter;
+    }
+	return '\0';
 }
-
-/*
-STARTRX
-STOPRX
-STARTTX
-STOPTX
-SUSPEND
-
-NCTS
-RXDRDY
-TXDRDY
-ERROR
-RXTO
-
-Registers
-INTEN
-INTENSET
-INTENCLR
-ERRORSRC
-ENABLE
-PSELRTS
-PSELTXD
-PSELCTS
-PSELRXD
-RXD
-TXD
-BAUDRATE
-CONFIG
-*/
