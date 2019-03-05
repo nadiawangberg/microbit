@@ -8,41 +8,56 @@
 
 
 int main(){
+
 	// Configure LED Matrix
+	
 	for(int i = 4; i <= 15; i++){
 		GPIO->DIRSET = (1 << i);
 		GPIO->OUTCLR = (1 << i);
 	}
-
-	// ??? Jordpinner settes logiskt lavt
+	
 
 	// Configure buttons
-	GPIO->PIN_CNF[17] = 0; // A (ikke nødvendig)
-	GPIO->PIN_CNF[26] = 0; // B
+	//GPIO->PIN_CNF[17] = 0; // A (ikke nødvendig)
+	//GPIO->PIN_CNF[26] = 0; // B
 
 
 	// Configure GPIOTE for A
-	GPIOTE->CONFIG[0].PSEL=17; // Channel 0 på GPIOTE lytter på pin A
-	GPIOTE->CONFIG[0].MODE=1; // Aktiverer event mode (hendelse modus)
-	// generere en hendelse(event) når A trykkes
-	// POLARITY 2 HITOLO?? 
+	GPIOTE->CONFIG[0]= 1 | (17<<8) | (2 << 16); 
+	// Channel 0 på GPIOTE lytter på pin A (17<<8)
+	// Aktiverer event mode = 1 (hendelse modus) (1)
+	// POLARITY 2 HITOLO (2 << 16), generere en hendelse(event) når A trykkes
 
 	// Configure GPIOTE for forsyningsspenning (pin 13,14,15)
-	GPIOTE->CONFIG[1].PSEL=13; // Channel 1 på GPIOTE lytter på forsyningsspenning
-	GPIOTE->CONFIG[1].MODE=3; // Aktiverer task mode (oppgave modus)
-	GPIOTE->CONFIG[2].OUTINIT=0; // initial value
+	GPIOTE->CONFIG[1]= (3) | (13<<8) | (0 << 20) | (3 << 16);
+									   // initial value
+						//Aktiverer task mode (oppgave modus)
+				//Channel 1 på GPIOTE lytter på forsyningsspenning
+	GPIOTE->CONFIG[2] = (3) | (14<<8) | (0 << 20) | (3 << 16);
+	GPIOTE->CONFIG[3] = (3) | (15<<8) | (0 << 20) | (3 << 16);
 
-	GPIOTE->CONFIG[2].PSEL=14;
-	GPIOTE->CONFIG[2].MODE=3;
-	GPIOTE->CONFIG[2].OUTINIT=0;
+	//Enable PPI Channel 0,1,2
+	PPI->CHENSET=0x7; // binary num 111
 
-	GPIOTE->CONFIG[3].PSEL=15;
-	GPIOTE->CONFIG[3].MODE=3;
-	GPIOTE->CONFIG[2].OUTINIT=0;
+	// A til 13
+	PPI->PPI_CH[0].EEP = (uint32_t)&(GPIOTE->IN[0]);
+	PPI->PPI_CH[0].TEP = (uint32_t)&(GPIOTE->OUT[1]);
 
-	int sleep = 0;
+	// A til 14
+	PPI->PPI_CH[1].EEP = (uint32_t)&(GPIOTE->IN[0]);
+	PPI->PPI_CH[1].TEP = (uint32_t)&(GPIOTE->OUT[2]);
+
+	// A til 15
+	PPI->PPI_CH[2].EEP = (uint32_t)&(GPIOTE->IN[0]);
+	PPI->PPI_CH[2].TEP = (uint32_t)&(GPIOTE->OUT[3]);
+
+	//PPI->CHENSET=0x7; // binary num 111
+
+
+	//int sleep = 0;
 	while(1){
 
+		/*
 		if (!(GPIO->IN & (1 << 26))) { // if B trykket
 			for(int i = 13; i <= 15; i++){
 				GPIO->OUTSET = (1 << i);
@@ -61,9 +76,10 @@ int main(){
 				GPIO->OUTSET = (1 << i);
 			}
 		}
+		*/
 
-		sleep = 10000;
-		while(--sleep);
+		//sleep = 10000;
+		//while(--sleep);
 	}
 	return 0;
 }
