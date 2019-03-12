@@ -6,7 +6,8 @@ static void ubit_led_matrix_helper_disable_all_pins();
 static void ubit_led_matrix_helper_translate_x_y_to_ground_supply(int * data);
 
 void ubit_led_matrix_init(){
-	for(int i = 4; i <= 15; i++){
+	int i;
+	for(i = 4; i <= 15; i++){
 		GPIO->DIRSET = (1 << i);
 		GPIO->OUTCLR = (1 << i);
 	}

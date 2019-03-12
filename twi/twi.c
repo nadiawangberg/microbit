@@ -104,7 +104,8 @@ void twi_multi_read(
     /* nRF51822 and the LSM303AGR. The reason we use inline assembly */
     /* is to always force the compiler to keep these instructions, */
     /* regardless of optimization level. */
-    for(int i = 0; i < 10; i++){
+    int i;
+    for(i = 0; i < 10; i++){
         __asm("nop"); // Hack for å få assembly kode til å få bedre tid
     }
 
@@ -120,7 +121,8 @@ void twi_multi_read(
 	TWI0->STARTRX = 1; // start reading from TWI bus
 	// RXDREADY = 1, we are ready to REAAAAD (we have correct data on bus, not søppel data)
 
-	for(int i = 0; i < registers_to_read-1; i++){
+
+	for(i = 0; i < registers_to_read-1; i++){
 		while(!TWI0->RXDREADY); // gets auto ACK
 		TWI0->RXDREADY = 0; // setter til 0 pga RXDREADY er IKKE ready for neste iterasjon i for løkke
 		
@@ -155,7 +157,8 @@ void twi_multi_write(
 	TWI0->TXD = start_register;
 	while(!TWI0->TXDSENT);
 
-	for(int i = 0; i < registers_to_write; i++){
+	int i;
+	for(i = 0; i < registers_to_write; i++){
 		TWI0->TXDSENT = 0;
 		TWI0->TXD = data_buffer[i];
 		while(!TWI0->TXDSENT);

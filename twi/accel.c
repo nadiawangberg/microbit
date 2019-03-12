@@ -2,10 +2,13 @@
 #include "accel.h"
 #include "twi.h"
 
-#define ACCEL_ADDR          __FILL_THIS_OUT_ //???
-#define ACCEL_DATA_REG      0x28 // OUT_X_L_A
+#define ACCEL_ADDR          0x19 //???
+#define ACCEL_DATA_REG      0x28 // OUT_X_L_A (XYZ Accel data)
 #define ACCEL_CTRL_REG_1    0x20
 #define ACCEL_CTRL_REG_4    0x23
+
+//start_register = 10 101000; // where 101000 is ACCEL_DATA_REG as binary
+#define start_register  0xA8 // 10101000 as hex
 
 #define ACCEL_100_HZ_HR_ON  0x57
 #define ACCEL_HR_SELECT     0x08
@@ -32,6 +35,12 @@ void accel_read_x_y_z(int * p_data_buffer){
     /*    You do not need to apply any transformations to */
     /*    the data that you read; this is already done */
     /*    below. */
+
+    //start_register = 10 101000; // where 101000 is ACCEL_DATA_REG as binary
+    //start_register = 0xA8; // 10101000 as hex
+
+    twi_multi_read(ACCEL_ADDR, start_register,6,raw_data); // array which is a container of what we read
+        
 
     int16_t x_accel, y_accel, z_accel;
 
